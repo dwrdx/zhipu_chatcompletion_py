@@ -1,9 +1,9 @@
 from flask import Flask, request, jsonify, session
 from flask_session import Session  # Flask-Session extension
-import openai
+from zhipuai import ZhipuAI
 import os
 import json
-import tiktoken
+# import tiktoken
 from datetime import datetime
 
 app = Flask(__name__)
@@ -14,12 +14,15 @@ app.config['SESSION_TYPE'] = 'filesystem'
 # Flask-Session
 Session(app)
 
+ZHIPU_API_KEY = os.getenv("ZHIPU_API_KEY")
+zhipu_client = ZhipuAI(api_key=ZHIPU_API_KEY) # 填写您自己的APIKey
+
+
 # Constants and Initializations
 MAX_ALLOWED_TOKENS = 16384
-MODEL_NAME = "gpt-3.5-turbo-16k-0613"
+MODEL_NAME = "glm-4"
 BOT_RESPONSE_BUFFER = 500
-openai.api_key = os.getenv("OPENAI_API_KEY")
-enc = tiktoken.encoding_for_model(MODEL_NAME)
+
 
 def initialize_system_context():
     # Initialize system context messages for the conversation, using an example of Streamy™, authorized by mAInstream studIOs LLC (mainstreamstudios.ai)
@@ -43,7 +46,8 @@ def after_request(response):
     return response
 
 def get_token_count(text):
-    return len(enc.encode(text))
+    return 5
+    # return len(enc.encode(text))
 
 def calculate_messages_tokens(messages):
     total_tokens = 0
@@ -73,30 +77,30 @@ def chat_endpoint():
     max_response_tokens = MAX_ALLOWED_TOKENS - calculate_messages_tokens(session['messages']) - BOT_RESPONSE_BUFFER
 
     try:  # Call the Chat completions API with appropriate parameters
-        response = openai.ChatCompletion.create(
+        response = zhipu_client.chat.completions.create(
             model=MODEL_NAME,
             messages=session['messages'],  # Use the messages from the session
-            temperature=1,
-            max_tokens=max_response_tokens,
-            top_p=1,
-            frequency_penalty=1,
-            presence_penalty=1
+            # temperature=1,
+            # max_tokens=max_response_tokens,
+            # top_p=1,
+            # frequency_penalty=1,
+            # presence_penalty=1
         )
-        tokens_used = response['usage']['total_tokens']
+        # tokens_used = response['usage']['total_tokens']
 
-        if tokens_used + calculate_messages_tokens(session['messages']) > MAX_ALLOWED_TOKENS:
-            print("Token limit exceeded by the bot's response.")
-            return jsonify({"response": "Sorry, the token limit has been exceeded."})
+        # if tokens_used + calculate_messages_tokens(session['messages']) > MAX_ALLOWED_TOKENS:
+        #     print("Token limit exceeded by the bot's response.")
+        #     return jsonify({"response": "Sorry, the token limit has been exceeded."})
 
         # Add the assistant's response to the session messages
-        session['messages'].append({"role": "assistant", "content": response.choices[0].message['content']})
+        session['messages'].append({"role": "assistant", "content": response.choices[0].message.content})
         
         # Retrieve the latest message which is the bot's response
-        bot_response = response.choices[0].message['content']
+        bot_response = response.choices[0].message.content
 
-    except openai.error.OpenAIError as e:
-        print(f"OpenAI Error: {e}.")
-        return jsonify({"response": f"An OpenAI error occurred: {e}"})
+    # except openai.error.OpenAIError as e:
+    #     print(f"OpenAI Error: {e}.")
+    #     return jsonify({"response": f"An OpenAI error occurred: {e}"})
     except Exception as e:
         print(f"An error occurred: {e}")
         return jsonify({"response": f"An error occurred: {e}"})
