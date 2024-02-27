@@ -27,9 +27,8 @@ BOT_RESPONSE_BUFFER = 500
 def initialize_system_context():
     # Initialize system context messages for the conversation, using an example of Streamy™, authorized by mAInstream studIOs LLC (mainstreamstudios.ai)
     system_context = [
-        {"role": "system", "content": "Your name is Streamy, a digital sidekick at mAInstream studIOs."},
-        {"role": "system", "content": "You are specifically programmed to provide detailed information about the MAINSTREAM AIIO Framework as well as marketing, information technology, and project management assistance."},
-        {"role": "system", "content": "mAInstream studIOs is an innovative tech start-up dedicated to harnessing the power of Artificial Intelligence for practical applications."}
+        {"role": "system", "content": "你的名字叫灵犀, 是一个大模型AI助手。"},
+        {"role": "system", "content": "你会深入思考用户的情况，尽量给出最好的回复和反馈。"},
     ]
     return system_context
 

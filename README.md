@@ -1,4 +1,4 @@
-# OpenAI Chat Completion API Example
+# Zhipu Chat Completion API Example
 
 This repository demonstrates a simple local client-server implementation of the OpenAI Chat Completion API, which utilizes the powerful GPT-3.5 language model to create conversational AI applications. The example consists of a Python Flask server that handles the interaction with the OpenAI API, and a Python client that communicates with the server to carry out the conversation.
 
@@ -38,6 +38,13 @@ OPENAI_API_KEY='your_api_key_here'
 4. Start the server by running `python server.py` within the `/server` directory.
 5. In a separate terminal, start the client by running `python client.py` within the `/client` directory.
 6. Follow the prompts in the client to begin a conversation with the AI.
+
+
+## Deploy to Tencent SCF
+```
+#!/bin/bash
+/var/lang/python37/bin/python3 server/flask_server_chatcompletion.py
+```
 
 ## Contributions
 
